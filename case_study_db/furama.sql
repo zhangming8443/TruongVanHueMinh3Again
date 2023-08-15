@@ -288,3 +288,95 @@ FROM
     hop_dong_chi_tiet hdct ON hd.ma_hop_dong = hdct.ma_hop_dong
         LEFT JOIN
     dich_vu_di_kem dvdk ON hdct.ma_dich_vu_di_kem = dvdk.ma_dich_vu_di_kem;
+
+-- request 6
+SELECT 
+    dv.ma_dich_vu,
+    dv.ten_dich_vu,
+    dv.dien_tich,
+    dv.chi_phi_thue,
+    ldv.ten_loai_dich_vu
+FROM
+    dich_vu dv
+        LEFT JOIN
+    loai_dich_vu ldv ON dv.ma_loai_dich_vu = ldv.ma_loai_dich_vu
+        LEFT JOIN
+    hop_dong hd ON dv.ma_dich_vu = hd.ma_dich_vu
+WHERE
+    dv.ma_dich_vu NOT IN (SELECT 
+            hd.ma_dich_vu
+        FROM
+            hop_dong hd
+        WHERE
+            YEAR(hd.ngay_lam_hop_dong) = 2021
+                AND QUARTER(hd.ngay_lam_hop_dong) = 1)
+GROUP BY dv.ma_dich_vu;
+
+-- request 7 
+SELECT 
+    dich_vu.ma_dich_vu,
+    dich_vu.ten_dich_vu,
+    dich_vu.dien_tich,
+    dich_vu.so_nguoi_toi_da,
+    dich_vu.chi_phi_thue,
+    loai_dich_vu.ten_loai_dich_vu
+FROM
+    dich_vu
+        LEFT JOIN
+    loai_dich_vu ON dich_vu.ma_loai_dich_vu = loai_dich_vu.ma_loai_dich_vu
+        LEFT JOIN
+    hop_dong ON dich_vu.ma_dich_vu = hop_dong.ma_dich_vu
+WHERE
+    dich_vu.ma_dich_vu NOT IN (SELECT 
+            hop_dong.ma_dich_vu
+        FROM
+            hop_dong
+        WHERE
+            YEAR(hop_dong.ngay_lam_hop_dong) = 2021)
+        AND YEAR(hop_dong.ngay_lam_hop_dong) = 2020
+GROUP BY hop_dong.ma_dich_vu;
+
+-- request 8
+SELECT 
+    khach_hang.ho_ten
+FROM
+    khach_hang
+GROUP BY khach_hang.ho_ten;
+
+SELECT DISTINCT
+    khach_hang.ho_ten
+FROM
+    khach_hang;
+
+SELECT 
+    khach_hang.ho_ten
+FROM
+    khach_hang 
+UNION 
+SELECT 
+    khach_hang.ho_ten
+FROM
+    khach_hang;
+
+-- request 9 
+SELECT 
+    MONTH(hop_dong.ngay_lam_hop_dong) AS thang,
+    COUNT(hop_dong.ma_khach_hang) AS so_khach_dat_phong
+FROM
+    hop_dong
+WHERE
+    YEAR(hop_dong.ngay_lam_hop_dong) = 2021
+GROUP BY thang
+ORDER BY thang; 
+	
+-- request 10
+SELECT 
+    hop_dong.ma_hop_dong,
+    hop_dong.ngay_ket_thuc,
+    hop_dong.tien_dat_coc,
+    IFNULL(SUM(hop_dong_chi_tiet.so_luong), 0) AS so_luong_dich_vu_di_kem
+FROM
+    hop_dong
+        LEFT JOIN
+    hop_dong_chi_tiet ON hop_dong.ma_hop_dong = hop_dong_chi_tiet.ma_hop_dong
+GROUP BY hop_dong.ma_hop_dong;
