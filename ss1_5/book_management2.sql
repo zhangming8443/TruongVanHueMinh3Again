@@ -97,7 +97,7 @@ order by s.name_student;
 select b.title, count(*) as borrow_count
 from books b
 join borrows br on b.id_books = br.id_books
-group by b.title
+group by b.id_books
 order by borrow_count desc
 limit 2;
 
@@ -120,14 +120,14 @@ where br.id_books is null;
 select s.name_student, count(*) as borrow_count
 from students s
 inner join borrows b on s.id_student = b.id_student
-group by s.name_student
+group by s.id_student
 order by borrow_count desc;
 
 -- Lấy ra các học viên mượn sách nhiều nhất của thư viện
 select s.name_student, count(*) as borrow_count
 from students s
 inner join borrows b on s.id_student = b.id_student
-group by s.name_student
+group by s.id_student
 order by borrow_count desc
 limit 1;
 
