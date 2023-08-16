@@ -380,3 +380,115 @@ FROM
         LEFT JOIN
     hop_dong_chi_tiet ON hop_dong.ma_hop_dong = hop_dong_chi_tiet.ma_hop_dong
 GROUP BY hop_dong.ma_hop_dong;
+
+-- request 11 
+SELECT 
+    dvdk.ma_dich_vu_di_kem, dvdk.ten_dich_vu_di_kem
+FROM
+    dich_vu_di_kem dvdk
+        JOIN
+    hop_dong_chi_tiet hdct ON dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
+        JOIN
+    hop_dong hd ON hd.ma_hop_dong = hdct.ma_hop_dong
+        JOIN
+    khach_hang kh ON kh.ma_khach_hang = hd.ma_khach_hang
+        JOIN
+    loai_khach lk ON lk.ma_loai_khach = kh.ma_loai_khach
+WHERE
+    lk.ten_loai_khach = 'Diamond'
+        AND (kh.dia_chi LIKE '%Vinh%'
+        OR kh.dia_chi LIKE '%Quảng Ngãi%');
+
+-- request 12
+SELECT 
+    hd.ma_hop_dong,
+    nv.ho_ten,
+    kh.ho_ten,
+    kh.so_dien_thoai,
+    dv.ten_dich_vu,
+    SUM(hdct.so_luong) AS so_luong_dich_vu_di_kem,
+    hd.tien_dat_coc
+FROM
+    hop_dong hd
+        JOIN
+    nhan_vien nv ON hd.ma_nhan_vien = nv.ma_nhan_vien
+        JOIN
+    khach_hang kh ON hd.ma_khach_hang = kh.ma_khach_hang
+        JOIN
+    dich_vu dv ON hd.ma_dich_vu = dv.ma_dich_vu
+        JOIN
+    hop_dong_chi_tiet hdct ON hd.ma_hop_dong = hdct.ma_hop_dong
+        JOIN
+    dich_vu_di_kem dvdk ON hdct.ma_dich_vu_di_kem = dvdk.ma_dich_vu_di_kem
+WHERE
+    MONTH(ngay_lam_hop_dong) > 9
+        AND YEAR(ngay_lam_hop_dong) = 2020
+        AND hd.ma_hop_dong NOT IN (SELECT 
+            hd.ma_hop_dong
+        FROM
+            hop_dong hd
+        WHERE
+            MONTH(ngay_lam_hop_dong) < 7
+                AND YEAR(ngay_lam_hop_dong) = 2021)
+GROUP BY hd.ma_hop_dong;
+
+-- request 13
+SELECT 
+    dvdk.ma_dich_vu_di_kem,
+    dvdk.ten_dich_vu_di_kem,
+    SUM(hdct.so_luong) AS so_luong_dich_vu_di_kem
+FROM
+    hop_dong_chi_tiet hdct
+        JOIN
+    dich_vu_di_kem dvdk ON hdct.ma_dich_vu_di_kem = dvdk.ma_dich_vu_di_kem
+GROUP BY dvdk.ma_dich_vu_di_kem , dvdk.ten_dich_vu_di_kem
+HAVING SUM(hdct.so_luong) = (SELECT 
+        MAX(so_luong_dich_vu_di_kem)
+    FROM
+        (SELECT 
+            SUM(hdct.so_luong) AS so_luong_dich_vu_di_kem
+        FROM
+            hop_dong_chi_tiet hdct
+        GROUP BY ma_dich_vu_di_kem) AS sldvdk);
+
+-- request 14
+SET sql_mode = 0;
+SELECT 
+    hd.ma_hop_dong,
+    ldv.ten_loai_dich_vu,
+    dvdk.ten_dich_vu_di_kem,
+    COUNT(hdct.ma_dich_vu_di_kem) AS so_lan_su_dung
+FROM
+    dich_vu dv
+        JOIN
+    hop_dong hd ON dv.ma_dich_vu = hd.ma_dich_vu
+        JOIN
+    hop_dong_chi_tiet hdct ON hd.ma_hop_dong = hdct.ma_hop_dong
+        JOIN
+    dich_vu_di_kem dvdk ON hdct.ma_dich_vu_di_kem = dvdk.ma_dich_vu_di_kem
+        JOIN
+    loai_dich_vu ldv ON dv.ma_loai_dich_vu = ldv.ma_loai_dich_vu
+GROUP BY ten_dich_vu_di_kem
+HAVING so_lan_su_dung = 1
+ORDER BY hd.ma_hop_dong;
+SET sql_mode = 1;
+
+-- request 15
+SELECT 
+    nv.ma_nhan_vien,
+    nv.ho_ten,
+    td.ten_trinh_do,
+    bp.ten_bo_phan,
+    nv.so_dien_thoai,
+    nv.dia_chi
+FROM
+    nhan_vien nv
+        JOIN
+    trinh_do td ON nv.ma_trinh_do = td.ma_trinh_do
+        JOIN
+    bo_phan bp ON nv.ma_bo_phan = bp.ma_bo_phan
+        JOIN
+    hop_dong hd ON nv.ma_nhan_vien = hd.ma_nhan_vien
+GROUP BY hd.ma_nhan_vien
+HAVING COUNT(hd.ma_nhan_vien) > 0
+    AND COUNT(hd.ma_nhan_vien) < 4;
