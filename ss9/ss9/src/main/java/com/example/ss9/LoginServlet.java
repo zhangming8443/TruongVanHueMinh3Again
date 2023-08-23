@@ -21,10 +21,10 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         if ("admin".equals(username) && "123abc".equals(password)) {
-            request.getRequestDispatcher("/success.jsp").forward(request, response);
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
-            request.setAttribute("message", "Admin đăng nhập thành công !" + dtf.format(now));
+            request.setAttribute("message", "Admin đăng nhập thành công " + dtf.format(now));
+            request.getRequestDispatcher("/success.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Tài khoản hoặc mật khẩu không chính xác !");
             request.getRequestDispatcher("/index.jsp").forward(request, response);
