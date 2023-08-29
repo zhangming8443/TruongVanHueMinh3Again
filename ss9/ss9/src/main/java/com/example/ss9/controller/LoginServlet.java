@@ -1,4 +1,7 @@
-package com.example.ss9;
+package com.example.ss9.controller;
+
+import com.example.ss9.service.ILoginService;
+import com.example.ss9.service.LoginService;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -10,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 @WebServlet(name = "LoginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
+    private ILoginService loginService = new LoginService();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -21,9 +25,8 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         if ("admin".equals(username) && "123abc".equals(password)) {
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-            request.setAttribute("message", "Admin đăng nhập thành công " + dtf.format(now));
+
+            request.setAttribute("message", "Admin đăng nhập thành công " + loginService.checkDate());
             request.getRequestDispatcher("/success.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Tài khoản hoặc mật khẩu không chính xác !");

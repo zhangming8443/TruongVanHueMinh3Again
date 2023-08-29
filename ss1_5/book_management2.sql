@@ -26,9 +26,14 @@ create table books(
     page_size int,
     id_authors int,
     id_category int,
+    is_delete int default 0,
     foreign key (id_authors) references authors (id_authors),
     foreign key (id_category) references category (id_category)
 );
+select id_books, title, page_size, name_authors,name_category
+from books b
+join authors a on a.id_authors = b.id_authors
+join category c on c.id_category= b.id_category;
 
 create table borrows(
 	id_borrows int primary key auto_increment,
@@ -85,7 +90,8 @@ insert into borrows (id_student, id_books, borrow_date, return_date) values
 select title, name_category, name_authors
 from books b
 join category c on b.id_category = c.id_category
-join authors a on b.id_authors = a.id_authors;
+join authors a on b.id_authors = a.id_authors
+order by b.id_books;
 
 -- Lấy ra danh sách các học viên đã từng mượn sách và sắp xếp danh sách theo theo tên từ a->z
 select name_student, borrow_date
@@ -145,7 +151,7 @@ group by b.id_books;
 
 -- Viết 1 stored procedure thêm mới book trong database với tham số kiểu IN
 DELIMITER //
-create procedure spAddBook
+create procedure sp_add_book
 (
     in p_title varchar(255),
     in p_page_size varchar(255),
@@ -156,8 +162,28 @@ begin
     insert into books (title, page_size, id_authors, id_category)
     values (p_title, p_page_size, p_id_authors, p_id_category);
 end //
+DELIMITER // 
 
-call spAddBook('Công nghệ', 3000, 3, 4);
+call sp_add_book('Công nghệ', 3000, 3, 4);
+
+set sql_safe_updates = 1;
+
+DELIMITER //
+CREATE PROCEDURE sp_delete_book
+	(
+    b_book_id INT
+    )
+BEGIN
+    UPDATE books
+    SET is_delete = 1
+    WHERE books.id_books = b_book_id;
+END //
+DELIMITER //
+
+update books set is_delete = 1 where id_books = 3;
+
+call sp_delete_book(5);
+
 
 
 
