@@ -19,9 +19,9 @@ import java.util.List;
 
 @WebServlet(name = "BookServlet", value = "/book")
 public class BookServlet extends HttpServlet {
-    IBookService bookService = new BookService();
-    ICategoryService categoryService = new CategoryService();
-    IAuthorSevice authorSevice = new AuthorService();
+    private final IBookService bookService = new BookService();
+    private final ICategoryService categoryService = new CategoryService();
+    private final IAuthorSevice authorSevice = new AuthorService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -94,9 +94,8 @@ public class BookServlet extends HttpServlet {
         Book book = bookService.findById(id);
         try {
             if (book == null) {
-                request.getRequestDispatcher("book/error.jsp").forward(request,response);
-            }
-            else {
+                request.getRequestDispatcher("book/error.jsp").forward(request, response);
+            } else {
                 bookService.delete(id);
                 response.sendRedirect("/book");
             }

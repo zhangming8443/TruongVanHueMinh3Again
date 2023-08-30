@@ -7,7 +7,7 @@ import com.example.ss11.repository.IBookRepo;
 import java.util.List;
 
 public class BookService implements IBookService {
-    IBookRepo bookRepo = new BookRepo();
+    private final IBookRepo bookRepo = new BookRepo();
     @Override
     public List<Book> getAll() {
         return bookRepo.getAll();

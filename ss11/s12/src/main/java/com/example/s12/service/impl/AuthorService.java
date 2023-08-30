@@ -8,7 +8,7 @@ import com.example.s12.service.IAuthorSevice;
 import java.util.List;
 
 public class AuthorService implements IAuthorSevice {
-    IAuthorRepo authorRepo = new AuthorRepo();
+    private final IAuthorRepo authorRepo = new AuthorRepo();
     @Override
     public List<Author> getAllAuthor() {
         return authorRepo.getAllAuthor();

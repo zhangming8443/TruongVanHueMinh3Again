@@ -8,7 +8,7 @@ import com.example.s12.service.ICategoryService;
 import java.util.List;
 
 public class CategoryService implements ICategoryService {
-    ICategoryRepo categoryRepo = new CategoryRepo();
+    private final ICategoryRepo categoryRepo = new CategoryRepo();
 
     @Override
     public List<Category> getAllCategory() {

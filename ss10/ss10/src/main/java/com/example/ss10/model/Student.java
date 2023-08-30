@@ -1,4 +1,4 @@
-package com.example.ss10;
+package com.example.ss10.model;
 
 public class Student {
     private int codeStudent;

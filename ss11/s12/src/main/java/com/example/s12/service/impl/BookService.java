@@ -9,7 +9,7 @@ import com.example.s12.service.IBookService;
 import java.util.List;
 
 public class BookService implements IBookService {
-    IBookRepo bookRepo = new BookRepo();
+    private final IBookRepo bookRepo = new BookRepo();
 
     @Override
     public List<Book> getAll() {
